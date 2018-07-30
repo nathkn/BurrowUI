@@ -16,6 +16,7 @@ export class ClusterHome {
     public message:    string,
     public cluster:    Cluster,
     public request:    Request,
+    public clusterName: string
   ) {
     this.consumers = [];
     this.topics = [];
@@ -34,9 +35,9 @@ export class ClusterSortPipe implements PipeTransform {
   transform(array: Array<any>): Array<string> {
     if (array == null) return array;
     array.sort((a: any, b: any) => {
-      if (a.request.cluster.toLowerCase() < b.request.cluster.toLowerCase()) {
+      if (a.clusterName.toLowerCase() < b.clusterName.toLowerCase()) {
         return -1;
-      } else if (a.request.cluster.toLowerCase() > b.request.cluster.toLowerCase()) {
+      } else if (a.clusterName.toLowerCase() > b.clusterName.toLowerCase()) {
         return 1;
       } else {
         return 0;

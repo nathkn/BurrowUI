@@ -3,11 +3,13 @@ import {PipeTransform, Injectable, Pipe} from "@angular/core";
 
 export class Topic {
 
-  constructor(
+  constructor(    
     public error:      string,
     public message:    string,
     public offsets:    number[],
-    public request:    Request
+    public request:    Request,
+    public topic:      string,
+    public cluster:    string    
   ) {};
 
 }
@@ -23,9 +25,9 @@ export class TopicSortPipe implements PipeTransform {
   transform(array: Array<any>): Array<string> {
     if (array == null) return array;
     array.sort((a: any, b: any) => {
-      if (a.request.topic.toLowerCase() < b.request.topic.toLowerCase()) {
+      if (a.topic.toLowerCase() < b.topic.toLowerCase()) {
         return -1;
-      } else if (a.request.topic.toLowerCase() > b.request.topic.toLowerCase()) {
+      } else if (a.topic.toLowerCase() > b.topic.toLowerCase()) {
         return 1;
       } else {
         return 0;

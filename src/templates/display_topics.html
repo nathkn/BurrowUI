@@ -7,8 +7,8 @@
   </thead>
   <tbody>
   <tr *ngFor="let topic of topics | topicSort">
-    <td class="mdl-data-table__cell--non-numeric" style="width: 70%">{{ topic.request.topic }}</td>
-    <td class="mdl-data-table__cell--non-numeric" style="width: 30%">{{ topic.request.cluster }}</td>
+    <td class="mdl-data-table__cell--non-numeric" style="width: 70%">{{ topic?.topic }}</td>
+    <td class="mdl-data-table__cell--non-numeric" style="width: 30%">{{ topic?.cluster }}</td>
   </tr>
   </tbody>
 </table>

@@ -25,13 +25,13 @@
       <tbody *ngIf="consumer">
         <tr *ngFor='let partition of consumer.status.partitions | partitionFilter:pipeString'>
           <td></td>
-          <td class="mdl-data-table__cell--non-numeric">{{ partition.status }}</td>
-          <td>{{ partition.partition }}</td>
-          <td>{{ partition.end.lag | number }}</td>
-          <td>{{ partition.start.offset | number }}</td>
-          <td>{{ partition.end.offset | number }}</td>
-          <td class="mdl-data-table__cell--non-numeric">{{ partition.topic }}</td>
-          <td class="mdl-data-table__cell--non-numeric">{{ partition.end.timestamp | date:'medium' }}</td>
+          <td class="mdl-data-table__cell--non-numeric">{{ partition?.status }}</td>
+          <td>{{ partition?.partition }}</td>
+          <td>{{ partition?.end?.lag | number }}</td>
+          <td>{{ partition?.start?.offset | number }}</td>
+          <td>{{ partition?.end?.offset | number }}</td>
+          <td class="mdl-data-table__cell--non-numeric">{{ partition?.topic }}</td>
+          <td class="mdl-data-table__cell--non-numeric">{{ partition?.end?.timestamp | date:'medium' }}</td>
         </tr>
       </tbody>
     </table>

@@ -27,9 +27,9 @@ export class ConsumerSortPipe implements PipeTransform {
   transform(array: Array<any>): Array<string> {
     if (array == null) return array;
     array.sort((a: any, b: any) => {
-      if (a.request.group.toLowerCase() < b.request.group.toLowerCase()) {
+      if (a.status.group.toLowerCase() < b.status.group.toLowerCase()) {
         return -1;
-      } else if (a.request.group.toLowerCase() > b.request.group.toLowerCase()) {
+      } else if (a.status.group.toLowerCase() > b.status.group.toLowerCase()) {
         return 1;
       } else {
         return 0;

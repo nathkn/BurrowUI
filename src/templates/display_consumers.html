@@ -10,12 +10,12 @@
   </thead>
   <tbody *ngIf="consumers">
   <tr *ngFor="let consumer of consumers | consumerSort">
-    <td class="mdl-data-table__cell--non-numeric" style="width: 10%" [ngClass]="{statusBad: consumer.status.status == 'ERR'}">{{ consumer.status.status }}</td>
-    <td class="mdl-data-table__cell--non-numeric" style="width: 60%">{{ consumer.request.group }}</td>
-    <td class="mdl-data-table__cell--non-numeric" style="width: 10%">{{ consumer.status.totallag | number }}</td>
-    <td class="mdl-data-table__cell--non-numeric" style="width: 20%">{{ consumer.request.cluster }}</td>
+    <td class="mdl-data-table__cell--non-numeric" style="width: 10%" [ngClass]="{statusBad: consumer.status.status == 'ERR'}">{{ consumer?.status?.status }}</td>
+    <td class="mdl-data-table__cell--non-numeric" style="width: 60%">{{ consumer?.status?.group }}</td>
+    <td class="mdl-data-table__cell--non-numeric" style="width: 10%">{{ consumer?.status?.totallag | number }}</td>
+    <td class="mdl-data-table__cell--non-numeric" style="width: 20%">{{ consumer?.status?.cluster }}</td>
     <td style="width: 10%">
-      <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect" (click)="analyze(consumer.request.cluster, consumer.request.group)">
+      <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect" (click)="analyze(consumer.status.cluster, consumer.status.group)">
         <i class="material-icons">arrow_forward</i>
       </button>
     </td>

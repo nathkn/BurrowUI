@@ -7,6 +7,7 @@ import {ClusterConsumerHome} from "../classes/clusterConsumerHome";
 import {Consumer} from "../classes/consumer";
 import {ClusterTopicHome} from "../classes/clusterTopicHome";
 import {Topic} from "../classes/topic";
+import { Status } from "../classes/status";
 
 @Injectable()
 export class BurrowService {
@@ -43,7 +44,7 @@ export class BurrowService {
               });
             });
           });
-
+          
           this.getClusterTopicHome(cluster).subscribe(clusterObj => {
             clusterObj.topics.forEach(top => {
               this.getTopic(cluster, top).subscribe(topic => {
@@ -75,6 +76,7 @@ export class BurrowService {
   getCluster(cluster: string) : Observable<ClusterHome> {
     return this.http.get(this.burrowUrl + "/cluster/" + cluster)
       .map((res:Response) => res.json())
+      .map(res => new ClusterHome(res.error, res.message, res.offsets, res.request, cluster))
       .catch((error:any) => Observable.throw(error.json().error || 'Server Error'));
   }
 
@@ -87,6 +89,13 @@ export class BurrowService {
   getConsumer(cluster: string, consumer: string) : Observable<Consumer> {
     return this.http.get(this.burrowUrl + "/cluster/" + cluster + "/consumer/" + consumer)
       .map((res:Response) => res.json())
+      .map(res =>  {
+        // Converting boolean to number maintains compatability with Burrow 0.x
+        if(typeof(res.status.complete) === "boolean"){
+          res.status.complete = res.status.complete ? 1 : 0;
+        }
+        return res;
+      })
       .catch((error:any) => Observable.throw(error.json().error || 'Server Error'));
   }
 
@@ -99,6 +108,7 @@ export class BurrowService {
   getTopic(cluster: string, topic: string) : Observable<Topic> {
     return this.http.get(this.burrowUrl + "/cluster/" + cluster + "/topic/" + topic)
       .map((res:Response) => res.json())
+      .map(res => new Topic(res.error, res.message, res.offsets, res.request, topic, cluster))
       .catch((error:any) => Observable.throw(error.json().error || 'Server Error'));
   }
 

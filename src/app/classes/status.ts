@@ -4,10 +4,10 @@ export class Status {
     public cluster:         string,
     public group:           string,
     public status:          string,
-    public complete:        boolean,
+    public complete:        number,
     public partitions:      Partition[],
     public partition_count: number,
-    public maxlag:          string,
+    public maxlag:          Partition,
     public totallag:        number
   ) {
 
