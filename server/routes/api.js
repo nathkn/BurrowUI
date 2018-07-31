@@ -6,16 +6,14 @@ const router = express.Router();
 
 let burrow_url = "";
 
-console.log("BURROW_HOME: " + process.env.BURROW_HOME);
-
 if (process.env.BURROW_HOME) {
-  console.log("Burrow Home is Set");
   burrow_url = process.env.BURROW_HOME;
 }
 else {
-  console.log("Burrow Home Not Set");
   burrow_url = config.burrow.home;
 }
+
+console.log("Burrow URL: " + burrow_url);
 
 const url = new URLUtility(burrow_url);
 
