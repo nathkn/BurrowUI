@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import {ClusterHome} from "../classes/clusterHome";
-import {HomeService} from "../services/home.service";
-import {Topic} from "../classes/topic";
+import {ClusterHome} from '../classes/clusterHome';
+import {HomeService} from '../services/home.service';
+import {Topic} from '../classes/topic';
 
 @Component({
   selector: 'display_topic_list',

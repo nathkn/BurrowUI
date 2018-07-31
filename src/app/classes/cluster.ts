@@ -7,7 +7,6 @@ export class Cluster {
     public brokers:        string[],
     public broker_port:    number,
     public offsets_topic:  string
-  ) {
+  ) {}
 
-  };
 }

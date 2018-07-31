@@ -1,4 +1,4 @@
-import {Request} from "./request";
+import {Request} from './request';
 
 export class ClusterConsumerHome {
   constructor(
@@ -6,6 +6,6 @@ export class ClusterConsumerHome {
     public message:    string,
     public consumers:  string[],
     public request:    Request
-  ) {};
+  ) {}
 
 }

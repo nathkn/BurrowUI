@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import {Router} from "@angular/router";
-import {HomeService} from "../services/home.service";
-import {Consumer} from "../classes/consumer";
+import {Router} from '@angular/router';
+import {HomeService} from '../services/home.service';
+import {Consumer} from '../classes/consumer';
 
 @Component({
   selector: 'display_consumer_list',
@@ -23,7 +23,7 @@ export class DisplayConsumersComponent implements OnInit {
   }
 
   public analyze(cluster: string, consumer: string) {
-    let url = "/AnalyzeConsumer";
-    this.router.navigate([url], {queryParams: { consumer:consumer, cluster:cluster }});
+    const url = '/AnalyzeConsumer';
+    this.router.navigate([url], {queryParams: { consumer: consumer, cluster: cluster }});
   }
 }

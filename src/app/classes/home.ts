@@ -1,4 +1,4 @@
-import {Request} from "./request";
+import {Request} from './request';
 
 export class Home {
 
@@ -7,6 +7,6 @@ export class Home {
     public message:   string,
     public clusters:  string[],
     public request:   Request
-  ) {};
+  ) {}
 
 }

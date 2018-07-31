@@ -1,6 +1,6 @@
-import {PipeTransform, Injectable, Pipe} from "@angular/core";
-import {Request} from "./request";
-import {Status} from "./status";
+import {PipeTransform, Injectable, Pipe} from '@angular/core';
+import {Request} from './request';
+import {Status} from './status';
 
 export class Consumer {
 
@@ -25,7 +25,9 @@ export class Consumer {
 @Injectable()
 export class ConsumerSortPipe implements PipeTransform {
   transform(array: Array<any>): Array<string> {
-    if (array == null) return array;
+    if (array == null) {
+      return array;
+    }
     array.sort((a: any, b: any) => {
       if (a.status.group.toLowerCase() < b.status.group.toLowerCase()) {
         return -1;

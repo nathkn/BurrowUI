@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import {ClusterHome} from "../classes/clusterHome";
-import {HomeService} from "../services/home.service";
+import {ClusterHome} from '../classes/clusterHome';
+import {HomeService} from '../services/home.service';
 
 @Component({
   selector: 'available_clusters_list',
@@ -22,10 +22,10 @@ export class AvailableClustersComponent implements OnInit {
 
   public viewConsumers = (cluster) => {
     this.homeService.viewConsumers(cluster);
-  };
+  }
 
   public viewTopics = (cluster) => {
     this.homeService.viewTopics(cluster);
-  };
+  }
 
 }

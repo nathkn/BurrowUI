@@ -1,5 +1,5 @@
-import {PartitionInterval} from "./partitionInterval";
-import {Pipe, Injectable, PipeTransform} from "@angular/core";
+import {PartitionInterval} from './partitionInterval';
+import {Pipe, Injectable, PipeTransform} from '@angular/core';
 export class Partition {
   // Constructor
   constructor(
@@ -13,15 +13,15 @@ export class Partition {
   }
 
   get isError(): boolean {
-    return this.status == "ERR";
+    return this.status === 'ERR';
   }
 
   get isWarning(): boolean {
-    return this.status != "ERR" && this.status != "OK";
+    return this.status !== 'ERR' && this.status !== 'OK';
   }
 
   get isOkay(): boolean {
-    return this.status == "OK";
+    return this.status === 'OK';
   }
 }
 

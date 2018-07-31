@@ -1,6 +1,6 @@
-import { ConsumerComponent } from "../components/consumer.component";
-import { HomeComponent } from "../components/home.component";
-import { ErrorComponent } from "../components/error.component";
+import { ConsumerComponent } from '../components/consumer.component';
+import { HomeComponent } from '../components/home.component';
+import { ErrorComponent } from '../components/error.component';
 
 export const ROUTES = [
   {

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import {ClusterHome} from "../classes/clusterHome";
-import {HomeService} from "../services/home.service";
+import {ClusterHome} from '../classes/clusterHome';
+import {HomeService} from '../services/home.service';
 
 @Component({
   selector: 'consumer_application',
