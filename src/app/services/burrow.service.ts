@@ -1,34 +1,38 @@
-import { Injectable } from "@angular/core";
-import {Http, Response} from "@angular/http";
-import {Observable, BehaviorSubject, Subject} from "rxjs/Rx";
-import {Home} from "../classes/home";
-import {ClusterHome} from "../classes/clusterHome";
-import {ClusterConsumerHome} from "../classes/clusterConsumerHome";
-import {Consumer} from "../classes/consumer";
-import {ClusterTopicHome} from "../classes/clusterTopicHome";
-import {Topic} from "../classes/topic";
-import { Status } from "../classes/status";
+import { Injectable } from '@angular/core';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import {Observable, BehaviorSubject, Subject, throwError} from 'rxjs';
+import { retry, map, catchError } from 'rxjs/operators';
+import {Home} from '../classes/home';
+import {ClusterHome} from '../classes/clusterHome';
+import {ClusterConsumerHome} from '../classes/clusterConsumerHome';
+import {Consumer} from '../classes/consumer';
+import {ClusterTopicHome} from '../classes/clusterTopicHome';
+import {Topic} from '../classes/topic';
+import { Status } from '../classes/status';
 
 @Injectable()
 export class BurrowService {
   // Observable Home
   private _home: Subject<Home> = new Subject();
-  get home(): Observable<Home> { return this._home.asObservable() };
+  get home(): Observable<Home> { return this._home.asObservable(); }
 
   // Observable Cluster List
   private _clusters: BehaviorSubject<ClusterHome[]> = new BehaviorSubject([]);
-  get clusters(): Observable<ClusterHome[]> { return this._clusters.asObservable() };
+  get clusters(): Observable<ClusterHome[]> { return this._clusters.asObservable(); }
 
   // Dictionary of Consumers
   private consumerDictionary: ConsumerDictionary = {};
   private topicDictionary: TopicDictionary = {};
 
-  constructor(private http: Http) {
+  // Home URL for Burrow
+  private burrowUrl = '/api/burrow';
+
+  constructor(private http: HttpClient) {
 
   }
 
   // Setup Methods
-  loadHomeView() : void {
+  loadHomeView(): void {
     this.getHome().subscribe(obj => {
       this._home.next(obj);
 
@@ -44,7 +48,7 @@ export class BurrowService {
               });
             });
           });
-          
+
           this.getClusterTopicHome(cluster).subscribe(clusterObj => {
             clusterObj.topics.forEach(top => {
               this.getTopic(cluster, top).subscribe(topic => {
@@ -53,7 +57,7 @@ export class BurrowService {
             });
           });
 
-          let list = this._clusters.getValue();
+          const list = this._clusters.getValue();
 
           ref.consumers = this.consumerDictionary[cluster];
           ref.topics = this.topicDictionary[cluster];
@@ -64,54 +68,78 @@ export class BurrowService {
     });
   }
 
-  // Home URL for Burrow
-  private burrowUrl = '/api/burrow';
-
-  getHome() : Observable<Home> {
-    return this.http.get(this.burrowUrl + "/home")
-      .map((res:Response) => res.json())
-      .catch((error:any) => Observable.throw(error.json().error || 'Server Error'));
+  getHome(): Observable<Home> {
+    return this.http.get<Home>(this.burrowUrl + '/home')
+      .pipe(
+        retry(3),
+        catchError(this.handleError)
+      );
   }
 
-  getCluster(cluster: string) : Observable<ClusterHome> {
-    return this.http.get(this.burrowUrl + "/cluster/" + cluster)
-      .map((res:Response) => res.json())
-      .map(res => new ClusterHome(res.error, res.message, res.offsets, res.request, cluster))
-      .catch((error:any) => Observable.throw(error.json().error || 'Server Error'));
+  getCluster(cluster: string): Observable<ClusterHome> {
+    return this.http.get<ClusterHome>(this.burrowUrl + '/cluster/' + cluster)
+      .pipe(
+        map((response: ClusterHome) => {
+          response.clusterName = cluster;
+          return response;
+        }),
+        retry(3),
+        catchError(this.handleError)
+      );
   }
 
-  getClusterConsumerHome(cluster: string) : Observable<ClusterConsumerHome> {
-    return this.http.get(this.burrowUrl + "/cluster/" + cluster + "/consumer")
-      .map((res:Response) => res.json())
-      .catch((error:any) => Observable.throw(error.json().error || 'Server Error'));
+  getClusterConsumerHome(cluster: string): Observable<ClusterConsumerHome> {
+    return this.http.get<ClusterConsumerHome>(this.burrowUrl + '/cluster/' + cluster + '/consumer')
+      .pipe(
+        retry(3),
+        catchError(this.handleError)
+      );
   }
 
-  getConsumer(cluster: string, consumer: string) : Observable<Consumer> {
-    return this.http.get(this.burrowUrl + "/cluster/" + cluster + "/consumer/" + consumer)
-      .map((res:Response) => res.json())
-      .map(res =>  {
-        // Converting boolean to number maintains compatability with Burrow 0.x
-        if(typeof(res.status.complete) === "boolean"){
-          res.status.complete = res.status.complete ? 1 : 0;
-        }
-        return res;
-      })
-      .catch((error:any) => Observable.throw(error.json().error || 'Server Error'));
+  getConsumer(cluster: string, consumer: string): Observable<Consumer> {
+    return this.http.get<Consumer>(this.burrowUrl + '/cluster/' + cluster + '/consumer/' + consumer)
+      .pipe(
+        retry(3),
+        catchError(this.handleError)
+      );
   }
 
-  getClusterTopicHome(cluster: string) : Observable<ClusterTopicHome> {
-    return this.http.get(this.burrowUrl + "/cluster/" + cluster + "/topic")
-      .map((res:Response) => res.json())
-      .catch((error:any) => Observable.throw(error.json().error || 'Server Error'));
+  getClusterTopicHome(cluster: string): Observable<ClusterTopicHome> {
+    return this.http.get<ClusterTopicHome>(this.burrowUrl + '/cluster/' + cluster + '/topic')
+      .pipe(
+        retry(3),
+        catchError(this.handleError)
+      );
   }
 
-  getTopic(cluster: string, topic: string) : Observable<Topic> {
-    return this.http.get(this.burrowUrl + "/cluster/" + cluster + "/topic/" + topic)
-      .map((res:Response) => res.json())
-      .map(res => new Topic(res.error, res.message, res.offsets, res.request, topic, cluster))
-      .catch((error:any) => Observable.throw(error.json().error || 'Server Error'));
+  getTopic(cluster: string, topic: string): Observable<Topic> {
+    return this.http.get<Topic>(this.burrowUrl + '/cluster/' + cluster + '/topic/' + topic)
+    .pipe(
+      map((response: Topic) => {
+        response.cluster = cluster;
+        response.topic = topic;
+        return response;
+      }),
+      retry(3),
+      catchError(this.handleError)
+    );
   }
 
+  private handleError(error: HttpErrorResponse) {
+    if (error.error instanceof ErrorEvent) {
+      // A client-side or network error occurred. Handle it accordingly.
+      console.error('An error occurred:', error.error.message);
+    } else {
+      // The backend returned an unsuccessful response code.
+      // The response body may contain clues as to what went wrong,
+      console.error(
+        `Backend returned code ${error.status}, ` +
+        `body was: ${error.error}`);
+    }
+    // return an observable with a user-facing error message
+    return throwError(
+      'There was a server error, please try again later.');
+  }
 }
 
 interface ConsumerDictionary {
@@ -121,3 +149,4 @@ interface ConsumerDictionary {
 interface TopicDictionary {
   [ index: string ]: Topic[];
 }
+
