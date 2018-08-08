@@ -130,3 +130,7 @@ a.mdl-layout-title {
 .statusWarning { background-color: #FFF59D; }
 
 .statusBad { background-color: #F48FB1; }
+
+.ng-progress-bar {
+  height: 13px;
+}

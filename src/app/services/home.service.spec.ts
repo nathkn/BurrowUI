@@ -11,11 +11,10 @@ import { Request } from '../classes/request';
 
 describe('HomeService', () => {
   let homeService: HomeService;
-  let burrowServiceSpy: jasmine.SpyObj<BurrowService>;
   let mockClusterHome: ClusterHome;
 
   beforeEach(() => {
-    const spy = jasmine.createSpyObj('BurrowService', ['loadHomeView']);
+    const spy = jasmine.createSpyObj('BurrowService', ['loadHomeView', 'loadConsumerView', 'loadTopicView']);
 
     TestBed.configureTestingModule({
       providers: [
@@ -24,13 +23,12 @@ describe('HomeService', () => {
       ]
     });
 
-    burrowServiceSpy = TestBed.get(BurrowService);
     homeService = TestBed.get(HomeService);
 
     mockClusterHome = new ClusterHome(
       'false',
       'cluster list returned',
-      new Cluster([''], 2181, 'zkpath', ['kafka'], 9092, ''),
+      new Cluster(['zk1'], 2181, 'zkpath', ['kafka'], 9092, ''),
       new Request('/v3/kafka', 'test-burrow-host')
     );
     mockClusterHome.clusterName = 'mock-cluster';
@@ -41,27 +39,31 @@ describe('HomeService', () => {
   });
 
   it('.viewTopicList should return inital viewTopicList as false', () => {
-    const falseBehaviorSubject = new BehaviorSubject(false);
-    expect(homeService.viewTopicList).toEqual(falseBehaviorSubject.asObservable());
+    homeService.viewTopicList.subscribe(toggle => {
+      expect(toggle).toBe(false);
+    });
   });
 
   it('.viewConsumerList should return initial viewConsumerList as false', () => {
-    const falseBehaviorSubject = new BehaviorSubject(false);
-    expect(homeService.viewConsumerList).toEqual(falseBehaviorSubject.asObservable());
+    homeService.viewConsumerList.subscribe(toggle => {
+      expect(toggle).toBe(false);
+    });
   });
 
   it('.listTitle should return inital listTitle', () => {
-    const listTitle = new BehaviorSubject('Please Select a Cluster');
-    expect(homeService.listTitle).toEqual(listTitle.asObservable());
+    homeService.listTitle.subscribe(title => {
+      expect(title).toEqual('Please Select a Cluster');
+    });
   });
 
   it('.selectedCluster should return initial empty cluster as empty', () => {
-    const emptySelectedCluster: Subject<ClusterHome> = new Subject();
-    expect(homeService.selectedCluster).toEqual(emptySelectedCluster.asObservable());
+    homeService.selectedCluster.subscribe(cluster => {
+      expect(cluster).toBeFalsy();
+    });
   });
 
   it('.loadedCluster should return inital loaded cluster as empty', () => {
-    expect(homeService.loadedCluster).not.toBeDefined();
+    expect(homeService.loadedCluster).toBeFalsy();
   });
 
   it('#viewTopics sets selected cluster', () => {

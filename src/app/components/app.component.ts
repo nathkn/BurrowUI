@@ -12,7 +12,9 @@ export class AppComponent implements OnInit {
   environment: string;
   burrowHome: string;
 
-  constructor(private route: ActivatedRoute, private burrowService: BurrowService) {
+  constructor(private route: ActivatedRoute, private burrowService: BurrowService) {  }
+
+  ngOnInit() {
     this.burrowService.getHome().subscribe(
       home => {
         this.burrowHome = home.request.host;
@@ -21,9 +23,6 @@ export class AppComponent implements OnInit {
         this.burrowHome = 'Error';
       }
     );
-  }
-
-  ngOnInit() {
     this.getParams();
   }
 

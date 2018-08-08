@@ -14,10 +14,10 @@
     </div>
     <div id="consumers_list" *ngIf="selectedCluster">
       <div *ngIf="viewConsumerList">
-        <display_consumer_list></display_consumer_list>
+        <display_consumer_list [cluster]="selectedCluster"></display_consumer_list>
       </div>
       <div *ngIf="viewTopicList">
-        <display_topic_list></display_topic_list>
+        <display_topic_list [cluster]="selectedCluster"></display_topic_list>
       </div>
     </div>
   </div>

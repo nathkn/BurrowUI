@@ -25,9 +25,12 @@ export class TopicSortPipe implements PipeTransform {
   transform(array: Array<any>): Array<string> {
     if (array == null) { return array; }
     array.sort((a: any, b: any) => {
-      if (a.topic.toLowerCase() < b.topic.toLowerCase()) {
+      // Place topics that start with special characters at the end
+      a = a.topic.replace(/[_\W]/g, String.fromCharCode(0xFFFF));
+      b = b.topic.replace(/[_\W]/g, String.fromCharCode(0xFFFF));
+      if (a.toLowerCase() < b.toLowerCase()) {
         return -1;
-      } else if (a.topic.toLowerCase() > b.topic.toLowerCase()) {
+      } else if (a.toLowerCase() > b.toLowerCase()) {
         return 1;
       } else {
         return 0;

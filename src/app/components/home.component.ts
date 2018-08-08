@@ -13,7 +13,9 @@ export class HomeComponent implements OnInit {
   viewConsumerList: boolean;
   viewTopicList: boolean;
 
-  constructor(private homeService: HomeService) {
+  constructor(private homeService: HomeService) {  }
+
+  ngOnInit() {
     // Subscribe
     this.homeService.selectedCluster.subscribe(cluster => {
       this.selectedCluster = cluster;
@@ -30,10 +32,6 @@ export class HomeComponent implements OnInit {
     this.homeService.viewConsumerList.subscribe(viewConsumers => {
       this.viewConsumerList = viewConsumers;
     });
-  }
-
-  ngOnInit() {
-
   }
 
 }

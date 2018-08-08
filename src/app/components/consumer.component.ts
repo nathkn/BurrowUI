@@ -24,8 +24,8 @@ export class ConsumerComponent implements OnInit {
     this.observableConsumer = this.consumerService.consumer;
 
     // Subscribe to changes
-    this.observableConsumer.subscribe( obj => {
-      this.consumer = obj;
+    this.observableConsumer.subscribe(consumer => {
+      this.consumer = consumer;
     });
 
     // Refresh every 10 seconds

@@ -2,11 +2,12 @@
    <header class="mdl-layout__header">
      <div class="mdl-layout__header-row">
        <!-- Title -->
-       <a class="mdl-layout-title" href="#">Kafka Analysis Tool</a>
+       <a class="mdl-layout-title" href="#">Kafka Analysis Tool</a>       
        <!-- Add spacer, to align navigation to the right -->
        <div class="mdl-layout-spacer"></div>
        <span class="mdl-layout-title" *ngIf="consumer">{{ consumer }} : {{ environment }}</span>
-       <span class="mdl-layout-title" *ngIf="!consumer">Burrow Server: {{ burrowHome }}</span>       
+       <span class="mdl-layout-title" *ngIf="!consumer">Burrow Server: {{ burrowHome }}</span>
+       <ng-progress></ng-progress>            
      </div>
    </header>
    <main class="mdl-layout__content">

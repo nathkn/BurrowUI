@@ -6,29 +6,29 @@
 <hr>
 <div id="cluster_list">
 
-  <div class="card-animation cluster-card mdl-card mdl-shadow--4dp" *ngFor="let cluster of clusters | clusterSort; let i = index;">
+  <div class="card-animation cluster-card mdl-card mdl-shadow--4dp" *ngFor="let key of clusterDictKeys">
     <div class="mdl-card__title mdl-card--expand">
-      <h2 class="mdl-card__title-text">{{ cluster?.clusterName }}</h2>
+      <h2 class="mdl-card__title-text">{{ clusterDict[key]?.clusterName }}</h2>
     </div>
     <div class="mdl-card__supporting-text">
       <ul class="cluster-info mdl-list">
         <li class="mdl-list__item">
               <span class="mdl-list__item-primary-content">
-                <span style="width: 100px">Consumers: </span>{{ cluster?.consumers?.length }}
+                <span style="width: 100px">Consumers: </span>{{ clusterDict[key]?.numConsumers }}
               </span>
         </li>
         <li class="mdl-list__item">
               <span class="mdl-list__item-primary-content">
-                <span style="width: 100px">Topics: </span>{{ cluster?.topics?.length }}
+                <span style="width: 100px">Topics: </span>{{ clusterDict[key]?.numTopics }}
               </span>
         </li>
       </ul>
     </div>
     <div class="mdl-card__actions mdl-card--border">
-      <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" (click)="viewConsumers(cluster)">
+      <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" (click)="viewConsumers(clusterDict[key])">
         View Consumers
       </a>
-      <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" style="float: right" (click)="viewTopics(cluster)">
+      <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" style="float: right" (click)="viewTopics(clusterDict[key])">
         View Topics
       </a>
     </div>

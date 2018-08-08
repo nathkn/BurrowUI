@@ -29,9 +29,12 @@ export class ConsumerSortPipe implements PipeTransform {
       return array;
     }
     array.sort((a: any, b: any) => {
-      if (a.status.group.toLowerCase() < b.status.group.toLowerCase()) {
+      // Place consumers that start with special characters at the end
+      a = a.status.group.replace(/[_\W]/g, String.fromCharCode(0xFFFF));
+      b = b.status.group.replace(/[_\W]/g, String.fromCharCode(0xFFFF));
+      if (a.toLowerCase() < b.toLowerCase()) {
         return -1;
-      } else if (a.status.group.toLowerCase() > b.status.group.toLowerCase()) {
+      } else if (a.toLowerCase() > b.toLowerCase()) {
         return 1;
       } else {
         return 0;

@@ -1,7 +1,8 @@
 import {Injectable} from '@angular/core';
 import {ClusterHome} from '../classes/clusterHome';
 import {Observable, Subject, BehaviorSubject} from 'rxjs';
-import {BurrowService} from './burrow.service';
+import {ClusterDictionary, ConsumerDictionary, TopicDictionary, BurrowService} from './burrow.service';
+import { ConsumerComponent } from '../components/consumer.component';
 
 @Injectable()
 export class HomeService {
@@ -18,12 +19,13 @@ export class HomeService {
   private _listTitle: BehaviorSubject<string> = new BehaviorSubject('Please Select a Cluster');
   get listTitle(): Observable<string> { return this._listTitle.asObservable(); }
 
+
   // Observable Clusters
-  clusters: Observable<ClusterHome[]>;
+  clusters: Observable<ClusterDictionary>;
 
   // Observable Selected Cluster
   private currentCluster: ClusterHome;
-  private _selectedCluster: Subject<ClusterHome> = new Subject();
+  private _selectedCluster: BehaviorSubject<ClusterHome> = new BehaviorSubject(null);
   get selectedCluster(): Observable<ClusterHome> {return this._selectedCluster.asObservable(); }
 
   get loadedCluster(): ClusterHome {
@@ -36,6 +38,7 @@ export class HomeService {
   }
 
   viewConsumers(cluster: ClusterHome) {
+    this.burrowService.loadConsumers(cluster);
     this.setCurrentCluster(cluster);
     this._viewTopicList.next(false);
     this._viewConsumerList.next(true);
@@ -43,6 +46,7 @@ export class HomeService {
   }
 
   viewTopics(cluster: ClusterHome) {
+    this.burrowService.loadTopics(cluster);
     this.setCurrentCluster(cluster);
     this._viewTopicList.next(true);
     this._viewConsumerList.next(false);

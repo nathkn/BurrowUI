@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import {ClusterHome} from '../classes/clusterHome';
-import {HomeService} from '../services/home.service';
+import {BurrowService} from '../services/burrow.service';
 import {Topic} from '../classes/topic';
+import { load } from '@angular/core/src/render3/instructions';
 
 @Component({
   selector: 'display_topic_list',
@@ -9,18 +10,14 @@ import {Topic} from '../classes/topic';
 })
 
 export class DisplayTopicsComponent implements OnInit {
+  @Input() cluster: ClusterHome;
   topics: Topic[];
 
-  constructor(private homeService: HomeService) {
-    this.topics = this.homeService.loadedCluster.topics;
-
-    this.homeService.selectedCluster.subscribe(cluster => {
-      this.topics = cluster.topics;
-    });
-  }
+  constructor(private burrowService: BurrowService) {  }
 
   ngOnInit() {
-
+    this.burrowService.topicDictionary.subscribe(topicDict => {
+      this.topics = topicDict[this.cluster.clusterName];
+    });
   }
-
 }

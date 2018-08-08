@@ -1,14 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import {Observable, BehaviorSubject, Subject, throwError} from 'rxjs';
-import { retry, map, catchError } from 'rxjs/operators';
+import {Observable, BehaviorSubject, Subject, of, forkJoin, concat, throwError, interval, combineLatest, merge} from 'rxjs';
+import { retry, map, catchError, take, mergeMap, concatMap } from 'rxjs/operators';
 import {Home} from '../classes/home';
 import {ClusterHome} from '../classes/clusterHome';
 import {ClusterConsumerHome} from '../classes/clusterConsumerHome';
 import {Consumer} from '../classes/consumer';
 import {ClusterTopicHome} from '../classes/clusterTopicHome';
 import {Topic} from '../classes/topic';
-import { Status } from '../classes/status';
 
 @Injectable()
 export class BurrowService {
@@ -16,53 +15,79 @@ export class BurrowService {
   private _home: Subject<Home> = new Subject();
   get home(): Observable<Home> { return this._home.asObservable(); }
 
-  // Observable Cluster List
-  private _clusters: BehaviorSubject<ClusterHome[]> = new BehaviorSubject([]);
-  get clusters(): Observable<ClusterHome[]> { return this._clusters.asObservable(); }
+  // Observable Dictionary of Clusters
+  private _clusters: BehaviorSubject<ClusterDictionary> = new BehaviorSubject({});
+  get clusters(): Observable<ClusterDictionary> { return this._clusters.asObservable(); }
 
-  // Dictionary of Consumers
-  private consumerDictionary: ConsumerDictionary = {};
-  private topicDictionary: TopicDictionary = {};
+  // Observable Dictionary of Consumers
+  private _consumers: BehaviorSubject<ConsumerDictionary> = new BehaviorSubject({});
+  get consumerDictionary(): Observable<ConsumerDictionary> {
+    return this._consumers.asObservable();
+  }
+
+  // Observable Dictionary of Topics
+  private _topics: BehaviorSubject<TopicDictionary> = new BehaviorSubject({});
+  get topicDictionary(): Observable<TopicDictionary> {
+    return this._topics.asObservable();
+  }
 
   // Home URL for Burrow
   private burrowUrl = '/api/burrow';
 
-  constructor(private http: HttpClient) {
-
-  }
+  constructor(private http: HttpClient) {  }
 
   // Setup Methods
   loadHomeView(): void {
-    this.getHome().subscribe(obj => {
-      this._home.next(obj);
+    this.getHome().subscribe(homeObj => {
+      this._home.next(homeObj);
 
-      obj.clusters.forEach(cluster => {
-        this.getCluster(cluster).subscribe(ref => {
-          this.consumerDictionary[cluster] = [];
-          this.topicDictionary[cluster] = [];
+      homeObj.clusters.forEach(clusterName => {
+        this.getCluster(clusterName).subscribe(newCluster => {
 
-          this.getClusterConsumerHome(cluster).subscribe(clusterObj => {
-            clusterObj.consumers.forEach(con => {
-              this.getConsumer(cluster, con).subscribe(newCon => {
-                this.consumerDictionary[cluster].push(newCon);
-              });
-            });
+          this.getClusterConsumerHome(clusterName).subscribe(clusterObj => {
+            newCluster.numConsumers = clusterObj.consumers.length;
           });
 
-          this.getClusterTopicHome(cluster).subscribe(clusterObj => {
-            clusterObj.topics.forEach(top => {
-              this.getTopic(cluster, top).subscribe(topic => {
-                this.topicDictionary[cluster].push(topic);
-              });
-            });
+          this.getClusterTopicHome(clusterName).subscribe(clusterObj => {
+            newCluster.numTopics = clusterObj.topics.length;
           });
 
-          const list = this._clusters.getValue();
+          const clusterDictionary = this._clusters.getValue();
+          clusterDictionary[newCluster.clusterName] = newCluster;
+          this._clusters.next(clusterDictionary);
+        });
+      });
+    });
+  }
 
-          ref.consumers = this.consumerDictionary[cluster];
-          ref.topics = this.topicDictionary[cluster];
-          list.push(ref);
-          this._clusters.next(list);
+  loadConsumers(cluster: ClusterHome): void {
+    const clusterName = cluster.clusterName;
+
+    this.getClusterConsumerHome(clusterName).subscribe(clusterObj => {
+      const consumerDictionary = this._consumers.getValue();
+      consumerDictionary[clusterName] = [];
+
+      clusterObj.consumers.forEach(consumer => {
+        this.getConsumer(clusterName, consumer).subscribe(newConsumer => {
+          consumerDictionary[clusterName].push(newConsumer);
+          this._consumers.next(consumerDictionary);
+        });
+      });
+    });
+
+  }
+
+  loadTopics(cluster: ClusterHome): void {
+    const clusterName = cluster.clusterName;
+
+    this.getClusterTopicHome(clusterName).subscribe(clusterObj => {
+      const topicDictionary = this._topics.getValue();
+      topicDictionary[clusterName] = [];
+
+      clusterObj.topics.forEach(topic => {
+        this.getTopic(clusterName, topic).subscribe(newTopic => {
+          topicDictionary[clusterName].push(newTopic);
+          this._topics.next(topicDictionary);
         });
       });
     });
@@ -142,11 +167,15 @@ export class BurrowService {
   }
 }
 
-interface ConsumerDictionary {
+export interface ConsumerDictionary {
   [ index: string ]: Consumer[];
 }
 
-interface TopicDictionary {
+export interface TopicDictionary {
   [ index: string ]: Topic[];
+}
+
+export interface ClusterDictionary {
+  [ index: string ]: ClusterHome;
 }
 

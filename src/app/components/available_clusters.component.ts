@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {ClusterHome} from '../classes/clusterHome';
 import {HomeService} from '../services/home.service';
+import {ClusterDictionary} from '../services/burrow.service';
 
 @Component({
   selector: 'available_clusters_list',
@@ -8,15 +9,15 @@ import {HomeService} from '../services/home.service';
 })
 
 export class AvailableClustersComponent implements OnInit {
-  clusters: ClusterHome[];
+  clusterDict: ClusterDictionary;
+  clusterDictKeys: string[];
 
-  constructor(private homeService: HomeService) {
-
-  }
+  constructor(private homeService: HomeService) { }
 
   ngOnInit() {
-    this.homeService.clusters.subscribe(clusterList => {
-      this.clusters = clusterList;
+    this.homeService.clusters.subscribe(clusterDict => {
+      this.clusterDict = clusterDict;
+      this.clusterDictKeys = Object.keys(this.clusterDict).sort();
     });
   }
 
